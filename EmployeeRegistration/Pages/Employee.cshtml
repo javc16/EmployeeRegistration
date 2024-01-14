@@ -2,23 +2,49 @@
 @model EmployeeRegistration.Pages.EmployeeModel
 @{
 }
+<script>
+    function formatPhoneNumber(input) {
+        var cleaned = ('' + input.value).replace(/\D/g, '');
+        var match = cleaned.match(/^(\d{1,3})(\d{0,3})(\d{0,4})$/);
+        var warningElem = document.getElementById("phoneWarning");
+
+        if (match) {
+            input.value = '(' + match[1] + ') ' + match[2] + (match[3] ? '-' + match[3] : '');
+        }
+
+        if (cleaned.length === 10) {
+            warningElem.style.display = 'none';
+        } else {
+            warningElem.style.display = 'block';
+        }
+
+        document.getElementById("phoneData").value = cleaned;
+    }
+</script>
+
 
 <h1>Employee</h1>
 
 <div class="d-flex">
     <div class="col-4">
         <form class="row" method="post">
-            <input type="number" placeholder="Id" name="id" />
-            <input type="text" placeholder="Last Name" name="lastName" />
-            <input type="text" placeholder="First Name" name="firstName" />
-            <input type="text" placeholder="Phone Number" name="phone" />
-            <input type="text" placeholder="Zip Code" name="zip" />
-            <input type="date" placeholder="Hire Date" name="hireDate" />
+            <input type="text" id="lastNameInput" placeholder="Last Name" name="lastName" />
+            <input type="text" id="firstNameInput" placeholder="First Name" name="firstName" />
+            <input type="text" id="phoneInput" placeholder="Phone Number" name="phoneDisplay" oninput="formatPhoneNumber(this)" />
+            <input type="hidden" id="phoneData" name="phone" />
+            <span id="phoneWarning" style="color: red; display: none;">Please enter a valid 10-digit phone number.</span>
+            <input type="text" id="zipInput" placeholder="Zip Code" name="zip" />
+            <input type="date" id="hireDateInput" placeholder="Hire Date" name="hireDate" />
             <button type="submit">Add</button>
         </form>
     </div>
     <div class="col-2"></div>
     <div class="col-6">
+        <form method="get">
+            <input type="text" name="searchTerm" placeholder="Enter Last Name or Phone" />
+            <input type="submit" value="Search" />
+        </form>
+
         <table class="table">
             <thead>
                 <tr>
@@ -44,13 +70,23 @@
                             @employee.LastName
                         </td>
                         <td>
-                            @employee.Phone
+                            @{
+                                string formattedPhone = employee.Phone;
+                                if (!string.IsNullOrEmpty(formattedPhone) && formattedPhone.Length == 10)
+                                {
+                                    formattedPhone = String.Format("({0}) {1}-{2}",
+                                    formattedPhone.Substring(0, 3),
+                                    formattedPhone.Substring(3, 3),
+                                    formattedPhone.Substring(6));
+                                }
+                            }
+                            @formattedPhone
                         </td>
                         <td>
                             @employee.Zip
                         </td>
                         <td>
-                            @employee.HireDate
+                            @employee.HireDate.ToString("MM/dd/yyyy")
                         </td>
                     </tr>
                 }

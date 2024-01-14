@@ -1,11 +1,13 @@
 using EmployeeRegistration.Context;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-builder.Services.AddDbContext<EmployeeContext>();
+builder.Services.AddDbContext<EmployeeContext>(options
+    => options.UseSqlServer(builder.Configuration.GetConnectionString("MyContextConnection")));
 
 var app = builder.Build();
 
