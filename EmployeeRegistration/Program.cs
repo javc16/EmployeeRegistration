@@ -25,7 +25,14 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+app.MapGet("/", async context =>
+{
+    context.Response.Redirect("/Employee");
+    await Task.CompletedTask; 
+});
 
 app.MapRazorPages();
+
+
 
 app.Run();
